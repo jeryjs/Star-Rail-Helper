@@ -1,0 +1,36 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="350dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center_horizontal"
+            android:alpha="0.3"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/bg_header"
+            app:tint="@color/colorAccentVariant" />
+
+        <TextView
+            android:id="@+id/tvHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="@font/zh_cn_modify"
+            android:padding="8dp"
+            android:textAlignment="center"
+            android:textColor="@color/colorAccent"
+            android:textSize="15sp"
+            tools:text="Active Codes"/>
+
+    </FrameLayout>
+
+</layout>
