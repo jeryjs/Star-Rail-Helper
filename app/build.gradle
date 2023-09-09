@@ -11,8 +11,8 @@ android {
         applicationId "com.jery.starrailhelper"
         minSdk 26
         targetSdk 34
-        versionCode 1
-        versionName "0.0.6-alpha"
+        versionCode 2
+        versionName "0.0.7-alpha"
     }
 
     buildTypes {
@@ -47,4 +47,5 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.16.1'
     implementation 'com.github.bumptech.glide:glide:4.15.1'
     implementation 'androidx.preference:preference-ktx:1.2.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 }

@@ -5,8 +5,8 @@
     tools:ignore="ContentDescription">
 
     <data>
-        <variable name="codeItem"
-            type="com.jery.starrailhelper.data.CodeItem" />
+        <variable name="eventItem"
+            type="com.jery.starrailhelper.data.EventItem" />
         <variable name="Utils"
             type="com.jery.starrailhelper.utils.Utils" />
     </data>
@@ -22,7 +22,6 @@
         <ImageView
             android:layout_width="4dp"
             android:layout_height="match_parent"
-            android:background="@{codeItem.getRedeemedStatusColor()}"
             tools:background="@color/colorAccent"/>
 
         <ImageView
@@ -44,41 +43,11 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/zh_cn_modify"
                 android:textSize="13sp"
-                android:text="@{@string/code_prefix + ' ' + codeItem.code}"
+                android:text="@{eventItem.event}"
                 android:textColor="@color/colorOnPrimary"
-                tools:text="CODE" />
-
-            <TextView
-                android:id="@+id/tvRewards"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="@font/bigshot_one"
-                android:textSize="12sp"
-                android:text="@{codeItem.rewardsString}"
-                android:textColor="@color/colorAccentVariant"
-                tools:text="Reward x10" />
+                tools:text="WEB EVENT" />
 
         </LinearLayout>
-
-        <ImageView
-            android:id="@+id/ivCopy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:onClick="@{(v) -> Utils.copyToClipboard(codeItem.code, v)}"
-            app:srcCompat="?attr/actionModeCopyDrawable"
-            app:tint="@color/colorAccent" />
-
-        <ImageView
-            android:id="@+id/ivRedeem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:rotation="90"
-            app:srcCompat="@android:drawable/stat_sys_upload"
-            app:tint="@color/colorAccent" />
-
     </LinearLayout>
 
 </layout>
