@@ -19,7 +19,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.jery.starrailhelper.R
 import com.jery.starrailhelper.adapter.CodeAdapter
+import com.jery.starrailhelper.adapter.EventAdapter
 import com.jery.starrailhelper.data.CodeItem
+import com.jery.starrailhelper.data.EventItem
 import com.jery.starrailhelper.databinding.ActivityMainBinding
 import com.jery.starrailhelper.tasks.CodeCheckScheduler
 import com.jery.starrailhelper.utils.Utils
@@ -33,7 +35,9 @@ class MainActivity : AppCompatActivity() {
         private const val PREFS_NAME = "myPrefs"
         private const val SWITCH_STATE = "switchState"
 
-        lateinit var codeAdapter: CodeAdapter
+        lateinit var webEventsAdapter: EventAdapter
+        lateinit var activeCodesAdapter: CodeAdapter
+        lateinit var expiredCodesAdapter: CodeAdapter
         lateinit var binding: ActivityMainBinding
 
         var mContext: Context? = null
@@ -41,6 +45,7 @@ class MainActivity : AppCompatActivity() {
             return mContext!!
         }
     }
+    private val webEvents = mutableListOf<EventItem>()
     private val activeCodes = mutableListOf<CodeItem>()
     private val expiredCodes = mutableListOf<CodeItem>()
 
@@ -53,7 +58,7 @@ class MainActivity : AppCompatActivity() {
         try {
 
             setupRecyclerViews()
-            refreshCodes()
+            refreshAll()
 
             val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
             val editor = prefs.edit()
@@ -83,6 +88,7 @@ class MainActivity : AppCompatActivity() {
                 editor.apply()
             }
 
+            @Suppress("SdCardPath")     // Hardcoding '/data/data' to workaround the need to use context
             binding.appBarTitle.setOnLongClickListener {
                 val scrollView = ScrollView(this)
                 val horizontalScrollView = HorizontalScrollView(this)
@@ -99,13 +105,13 @@ class MainActivity : AppCompatActivity() {
                     .setTitle("Logs")
                     .setView(scrollView)
                     .setPositiveButton("Close") { dialog, _ -> dialog.dismiss() }
-                    .setNeutralButton("Copy") { _, _ -> Utils.copyToClipboard(textView.text.toString()) }
+                    .setNeutralButton("Copy") { _, _ -> Utils.copyToClipboard(textView.text.toString(), binding.root) }
                     .create()
                 alertDialog.show()
                 true
             }
 
-            // change app theme from night to day or day to night
+            // Easter Egg: change app theme from night to day or day to night
             binding.appBarIcon.setOnLongClickListener {
                 if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -114,11 +120,11 @@ class MainActivity : AppCompatActivity() {
                 true
             }
 
-            // show hidden settings menu
+            // Easter Egg: show hidden settings menu
             binding.notiStatus.setOnLongClickListener { showSettingsMenu(null); true}
 
             binding.swipeRefresh.setOnRefreshListener {
-                refreshCodes()
+                refreshAll()
             }
 
         } catch (e: Exception) {
@@ -128,15 +134,39 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerViews() {
-        codeAdapter = CodeAdapter(activeCodes, expiredCodes)
-        binding.rvCodes.apply {
-            adapter = codeAdapter
-            layoutManager = LinearLayoutManager(this@MainActivity)
+        webEventsAdapter = EventAdapter(webEvents)
+        activeCodesAdapter = CodeAdapter(activeCodes)
+        expiredCodesAdapter = CodeAdapter(expiredCodes)
+        with (binding) {
+            rvWebEvents.apply {
+                layoutManager = LinearLayoutManager(this@MainActivity)
+                adapter = webEventsAdapter
+            }
+            rvActiveCodes.apply {
+                adapter = activeCodesAdapter
+                layoutManager = LinearLayoutManager(this@MainActivity)
+            }
+            rvExpiredCodes.apply {
+                adapter = expiredCodesAdapter
+                layoutManager = LinearLayoutManager(this@MainActivity)
+            }
         }
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun refreshCodes() {
+    private fun refreshAll() {
+        lifecycleScope.launch {
+            binding.swipeRefresh.isRefreshing = true
+            val events = try { Utils.fetchEvents() } catch (e: Exception) {
+                Utils.log(TAG, "Failed to fetch events: $e")
+                Snackbar.make(binding.root, "Failed to fetch events: $e", Snackbar.LENGTH_SHORT).show()
+                binding.swipeRefresh.isRefreshing = false
+                return@launch
+            }
+            updateEvents(events)
+            webEventsAdapter.notifyDataSetChanged()
+            binding.swipeRefresh.isRefreshing = false
+        }
         lifecycleScope.launch {
             binding.swipeRefresh.isRefreshing = true
             val (ac, ec) = try { Utils.fetchCodes() } catch (e: Exception) {
@@ -148,11 +178,15 @@ class MainActivity : AppCompatActivity() {
 //            val (ac, ec) = Utils.demoCodes()
             updateCodes(ac, ec)
             notifyNewCodes(activeCodes)
-            codeAdapter.notifyDataSetChanged()
+            activeCodesAdapter.notifyDataSetChanged()
+            expiredCodesAdapter.notifyDataSetChanged()
             binding.swipeRefresh.isRefreshing = false
         }
     }
 
+    private fun updateEvents(events: List<EventItem>) {
+        webEvents.apply {clear(); addAll(events) }
+    }
     private fun updateCodes(nac: List<CodeItem>, nec: List<CodeItem>) {
         activeCodes.apply { clear(); addAll(nac) }
         expiredCodes.apply { clear(); addAll(nec) }
@@ -170,7 +204,7 @@ class MainActivity : AppCompatActivity() {
 
     fun showSettingsMenu(item: MenuItem?) {
         val bottomSheetDialog = BottomSheetDialog(this)
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_layout, null)
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_layout, binding.root)
         bottomSheetDialog.setContentView(dialogView)
 
         bottomSheetDialog.show()

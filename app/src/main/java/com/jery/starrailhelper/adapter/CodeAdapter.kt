@@ -19,80 +19,33 @@ import com.jery.starrailhelper.R
 import com.jery.starrailhelper.data.CodeItem
 import com.jery.starrailhelper.databinding.BottomSheetLayoutBinding
 import com.jery.starrailhelper.databinding.ItemCodeBinding
-import com.jery.starrailhelper.databinding.ItemHeaderBinding
 import com.jery.starrailhelper.databinding.ItemRewardBinding
 import com.jery.starrailhelper.utils.Utils
 
 class CodeAdapter(
-    private val activeCodes: List<CodeItem>,
-    private val expiredCodes: List<CodeItem>
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private val codes: MutableList<CodeItem>
+) : RecyclerView.Adapter<CodeAdapter.CodeViewHolder>() {
 
-    companion object {
-        private const val VIEW_TYPE_HEADER = 0
-        private const val VIEW_TYPE_CODE = 1
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CodeViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return when (viewType) {
-            VIEW_TYPE_HEADER -> {
-                val binding = ItemHeaderBinding.inflate(inflater, parent, false)
-                HeaderViewHolder(binding)
-            }
-            VIEW_TYPE_CODE -> {
-                val binding = ItemCodeBinding.inflate(inflater, parent, false)
-                CodeViewHolder(binding)
-            }
-            else -> throw IllegalArgumentException("Invalid view type")
-        }
+        val binding = ItemCodeBinding.inflate(inflater, parent, false)
+        return CodeViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (holder) {
-            is HeaderViewHolder -> {
-                if (position == 0) {
-                    holder.bind("Active Codes")
-                } else {
-                    holder.bind("Expired Codes")
-                }
-            }
-            is CodeViewHolder -> {
-                val codeItem = getCodeItem(position)
-                holder.bind(codeItem)
-            }
-        }
+    override fun onBindViewHolder(holder: CodeViewHolder, position: Int) {
+        val codeItem = getCodeItem(position)
+        holder.bind(codeItem)
     }
 
     override fun getItemCount(): Int {
-        return activeCodes.size + expiredCodes.size + 2
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        return when (position) {
-            0, activeCodes.size + 1 -> VIEW_TYPE_HEADER
-            else -> VIEW_TYPE_CODE
-        }
+        return if (codes.size>10) 10 else codes.size
     }
 
     private fun getCodeItem(position: Int): CodeItem {
-        return if (position < activeCodes.size + 1) {
-            activeCodes[position - 1]
-        } else {
-            expiredCodes[position - activeCodes.size - 2]
-        }
+        return codes[position]
     }
 
-    inner class HeaderViewHolder(private val binding: ItemHeaderBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-
-        fun bind(header: String) {
-            binding.tvHeader.text = header
-        }
-    }
-
-    inner class CodeViewHolder(private val binding: ItemCodeBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    inner class CodeViewHolder(private val binding: ItemCodeBinding): RecyclerView.ViewHolder(binding.root) {
 
         fun bind(codeItem: CodeItem) {
             val ctx = itemView.context
@@ -147,7 +100,7 @@ class CodeAdapter(
             }
 
             dialogBinding.rCode.text = codeItem.code
-            dialogBinding.rCode.setOnClickListener { Utils.copyToClipboard(codeItem.code) }
+            dialogBinding.rCode.setOnClickListener { Utils.copyToClipboard(codeItem.code, itemView.rootView) }
             dialogBinding.rStatus.text = codeItem.duration.first +" / "+ codeItem.duration.second
             dialogBinding.redeemBtn.text = if (codeItem.isRedeemed) "Redeem once again" else "Redeem Code"
             dialogBinding.redeemBtn.setOnClickListener { redeem(codeItem.code, ctx); codeItem.isRedeemed = true; notifyItemChanged(layoutPosition) }
@@ -155,7 +108,7 @@ class CodeAdapter(
         }
 
         private fun redeem(code: String, ctx: Context) {
-            Utils.copyToClipboard(code)
+            Utils.copyToClipboard(code, itemView.rootView)
 
             val bottomSheetDialog = BottomSheetDialog(ctx)
             val dialogView = LayoutInflater.from(ctx).inflate(R.layout.bottom_sheet_layout, null)
