@@ -12,42 +12,27 @@
     </data>
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginEnd="8dp"
         android:paddingVertical="4dp"
-        android:layout_marginVertical="4dp"
+        android:orientation="horizontal"
         android:background="@drawable/item_border">
 
         <ImageView
             android:layout_width="4dp"
             android:layout_height="match_parent"
-            tools:background="@color/colorAccent"/>
+            android:background="@{eventItem.getSeenStatusColor()}"
+            tools:background="@color/green"/>
 
         <ImageView
-            android:id="@+id/ivIcon"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginEnd="8dp"
-            tools:background="@drawable/ic_item_stellar_jade" />
+            android:id="@+id/ivBanner"
+            android:layout_width="250dp"
+            android:layout_height="140dp"
+            android:layout_gravity="center_horizontal"
+            tools:src="@drawable/ic_event_banner" />
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/tvCode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/zh_cn_modify"
-                android:textSize="13sp"
-                android:text="@{eventItem.event}"
-                android:textColor="@color/colorOnPrimary"
-                tools:text="WEB EVENT" />
-
-        </LinearLayout>
     </LinearLayout>
 
 </layout>

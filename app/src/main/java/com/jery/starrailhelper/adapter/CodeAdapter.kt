@@ -54,11 +54,10 @@ class CodeAdapter(
                 this.utils = Utils
                 executePendingBindings()
                 itemView.setOnClickListener { onItemClick(codeItem, ctx) }
-                ivIcon.setOnClickListener { codeItem.isRedeemed = (!codeItem.isRedeemed); notifyItemChanged(layoutPosition) }
+                ivIcon.setOnLongClickListener { codeItem.isRedeemed = (!codeItem.isRedeemed); notifyItemChanged(layoutPosition); false }
                 ivRedeem.setOnClickListener { redeem(codeItem.code, ctx); codeItem.isRedeemed = true; notifyItemChanged(layoutPosition) }
             }
             try {
-                codeItem.rewards.first().imageURL!!
                 Glide.with(ctx)
                     .load(codeItem.rewards.first().imageURL!!)
                     .placeholder(R.drawable.ic_timer)

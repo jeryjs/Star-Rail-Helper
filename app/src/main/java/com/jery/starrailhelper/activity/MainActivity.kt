@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity() {
         expiredCodesAdapter = CodeAdapter(expiredCodes)
         with (binding) {
             rvWebEvents.apply {
-                layoutManager = LinearLayoutManager(this@MainActivity)
+                layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
                 adapter = webEventsAdapter
             }
             rvActiveCodes.apply {

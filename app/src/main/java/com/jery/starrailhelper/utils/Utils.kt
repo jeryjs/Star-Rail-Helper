@@ -52,10 +52,10 @@ object Utils {
 
         val allEvents = curEvents.map {
             val event = it.children()[0].text()
-            val image = it.select("img").attr("src")
+            val image = it.select("img").attr("data-src").ifEmpty { it.select("img").attr("src") }.replace("scale-to-width-down/250", "scale-to-width-down/500")
             val duration = parseDuration( it.children()[1].text() )
             val type = it.children()[2].text()
-            EventItem(event, image, duration, type, false)
+            EventItem(event, image, duration, type)
         }
         return@withContext allEvents.filter{it.type=="Web"}
     }
