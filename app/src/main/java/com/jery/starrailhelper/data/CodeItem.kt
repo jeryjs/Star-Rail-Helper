@@ -35,7 +35,7 @@ data class CodeItem(
 
     private fun getRedeemedStatus(): Boolean {
         return try {
-            val codesPrefs = getAppContext().getSharedPreferences("CodesList", Context.MODE_PRIVATE)
+            val codesPrefs = getAppContext().getSharedPreferences("ItemsList", Context.MODE_PRIVATE)
             if (!codesPrefs.contains(code)) {
                 isNewCode = true
                 setRedeemedStatus(false)
@@ -45,7 +45,7 @@ data class CodeItem(
     }
     private fun setRedeemedStatus(status: Boolean) {
         try {
-            val codesPrefs = getAppContext().getSharedPreferences("CodesList", Context.MODE_PRIVATE)
+            val codesPrefs = getAppContext().getSharedPreferences("ItemsList", Context.MODE_PRIVATE)
             val editor = codesPrefs.edit()
             editor.putBoolean(code, status)
             editor.apply()

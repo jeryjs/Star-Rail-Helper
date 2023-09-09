@@ -77,9 +77,11 @@
                     android:id="@+id/rvWebEvents"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:scrollbars="horizontal"
+                    android:scrollbarThumbHorizontal="@color/colorAccent"
                     tools:listitem="@layout/item_code" tools:itemCount="3" />
 
-                <FrameLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                <FrameLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
                     <ImageView style="@style/ivHeader"/>
                     <TextView android:id="@+id/tvActiveHeader" android:text="@string/active_codes_header" style="@style/tvHeader"/>
                 </FrameLayout>
@@ -91,7 +93,7 @@
                     tools:listitem="@layout/item_code" tools:itemCount="5" />
 
 
-                <FrameLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                <FrameLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
                     <ImageView style="@style/ivHeader"/>
                     <TextView android:id="@+id/tvExpiredHeader" android:text="@string/expired_codes_header" style="@style/tvHeader"/>
                 </FrameLayout>
